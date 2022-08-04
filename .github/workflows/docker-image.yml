@@ -1,20 +1,25 @@
-name: Docker Image CI
+name: Django App Deploy
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+       branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-
-  build:
-
+  simple_build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Install docker-compose via pip
-    - run: pip install docker-compose
-    - name: Build the Docker image using docker-compose
-      run: docker-compose run app sh -c "python manage.py test && flake8"
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+           python-version: 3
+      - name: Install docker-compose
+        run: |
+            pip install docker-compose
+      - name: Use docker-compose to test
+        run: |
+            docker-compose run app sh -c "python manage.py test && flake8"
